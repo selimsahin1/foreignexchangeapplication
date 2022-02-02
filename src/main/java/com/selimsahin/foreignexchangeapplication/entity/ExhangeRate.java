@@ -1,4 +1,4 @@
-package com.selimsahin.foreignexchangeapplication.Entity;
+package com.selimsahin.foreignexchangeapplication.entity;
 
 import lombok.Data;
 

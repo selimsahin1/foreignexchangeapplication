@@ -1,4 +1,4 @@
-package com.selimsahin.foreignexchangeapplication.RestAPI;
+package com.selimsahin.foreignexchangeapplication.restAPI;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;

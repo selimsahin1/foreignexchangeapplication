@@ -1,10 +1,10 @@
-package com.selimsahin.foreignexchangeapplication.Service;
+package com.selimsahin.foreignexchangeapplication.service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.selimsahin.foreignexchangeapplication.Entity.ExhangeRate;
-import com.selimsahin.foreignexchangeapplication.RestAPI.RestClient;
+import com.selimsahin.foreignexchangeapplication.entity.ExhangeRate;
+import com.selimsahin.foreignexchangeapplication.restAPI.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
