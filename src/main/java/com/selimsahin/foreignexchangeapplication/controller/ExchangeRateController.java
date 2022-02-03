@@ -16,7 +16,7 @@ public class ExchangeRateController {
     ExchangeRateService exchangeRateService;
 
     @GetMapping("/get")
-    public ExhangeRate getExhangeRate(@RequestParam String symbols) throws Exception {
+    public ExhangeRate getExhangeRate(@RequestParam String symbols) {
         return exchangeRateService.getExhangeRate(symbols);
     }
 
