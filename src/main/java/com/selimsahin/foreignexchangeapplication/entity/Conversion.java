@@ -1,10 +1,10 @@
 package com.selimsahin.foreignexchangeapplication.entity;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -13,13 +13,14 @@ public class Conversion {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    @DateTimeFormat(pattern = "dd-MM-yyyy hh:mm:ss")
+    @Column(name = "transactionId")
+    private String transactionId;
     @Column(name = "createTime")
-    private String createTime;
-    @Column(name = "baseCurrency")
-    private String baseCurrency;
-    @Column(name = "baseAmount")
-    private BigDecimal baseAmount;
+    private LocalDate createTime;
+    @Column(name = "sourceCurrency")
+    private String sourceCurrency;
+    @Column(name = "sourceAmount")
+    private BigDecimal sourceAmount;
     @Column(name = "targetCurrency")
     private String targetCurrency;
     @Column(name = "targetAmount")

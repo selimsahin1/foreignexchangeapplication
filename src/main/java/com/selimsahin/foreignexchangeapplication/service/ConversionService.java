@@ -1,18 +1,17 @@
 package com.selimsahin.foreignexchangeapplication.service;
 
 import com.selimsahin.foreignexchangeapplication.entity.Conversion;
-import com.selimsahin.foreignexchangeapplication.entity.ExhangeRate;
+import com.selimsahin.foreignexchangeapplication.exception.CloudException;
+import com.selimsahin.foreignexchangeapplication.exception.HttpExceptionEnum;
 import com.selimsahin.foreignexchangeapplication.repository.ConversionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 public class ConversionService {
@@ -23,41 +22,44 @@ public class ConversionService {
     @Autowired
     ConversionRepository conversionRepository;
 
-    public Conversion getConversion(BigDecimal amount, String targetCurrency) throws Exception {
-        ExhangeRate exhangeRate = exchangeRateService.getExhangeRate(targetCurrency);
-        HashMap.Entry<String, BigDecimal> entry = exhangeRate.getRates().entrySet().iterator().next();
-        BigDecimal convertedAmount = entry.getValue().multiply(amount);
-
-        Conversion conversion = saveConversion(amount, targetCurrency, convertedAmount);
-        conversionRepository.save(conversion);
-
-        return conversion;
+    public Conversion getConversion(BigDecimal sourceAmount, String sourceCurrency, String targetCurrency) throws CloudException {
+        BigDecimal exhangeRate = exchangeRateService.getExhangeRate(sourceCurrency, targetCurrency);
+        BigDecimal targetAmount = exhangeRate.multiply(sourceAmount);
+        Conversion conversion = saveConversion(sourceAmount, sourceCurrency, targetCurrency, targetAmount);
+        try {
+            conversionRepository.save(conversion);
+            return conversion;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CloudException(HttpExceptionEnum.HTTP_CONVERSION_DATA_DOES_NOT_SAVED);
+        }
     }
 
-    public List<Conversion> getConversionList(String transactionDate,
-                                              Long conversionId,
-                                              Integer pageNumber,
-                                              Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        if (conversionId != null) {
-            return conversionRepository.findAllById(conversionId);
-        } else
-            return conversionRepository.findAllByCreateTimeContains(transactionDate);
+    public Page<Conversion> getConversionList(LocalDate transactionDate,
+                                              String transactionId,
+                                              Pageable pageable) throws CloudException {
+        try {
+            if (transactionId != null) {
+                return conversionRepository.findAllByTransactionId(transactionId, pageable);
+            } else
+                return conversionRepository.findAllByCreateTime(transactionDate, pageable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CloudException(HttpExceptionEnum.HTTP_CONVERTION_LIST_HAS_ERROR);
+        }
     }
 
-    private Conversion saveConversion(BigDecimal amount, String targetCurrency, BigDecimal convertedAmount) throws Exception {
+    private Conversion saveConversion(BigDecimal sourceAmount,
+                                      String sourceCurrency,
+                                      String targetCurrency,
+                                      BigDecimal targetAmount) throws CloudException {
         Conversion conversion = new Conversion();
-        conversion.setBaseCurrency("EUR");
-        conversion.setBaseAmount(amount);
+        conversion.setTransactionId(UUID.randomUUID().toString());
+        conversion.setSourceCurrency(sourceCurrency);
+        conversion.setSourceAmount(sourceAmount);
         conversion.setTargetCurrency(targetCurrency);
-        conversion.setTargetAmount(convertedAmount);
-        conversion.setCreateTime(getCurrentTimeStamp());
+        conversion.setTargetAmount(targetAmount);
+        conversion.setCreateTime(LocalDate.now());
         return conversion;
-    }
-
-    private static String getCurrentTimeStamp() {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date now = new Date();
-        return sdfDate.format(now);
     }
 }

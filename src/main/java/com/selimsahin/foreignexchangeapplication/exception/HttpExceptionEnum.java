@@ -8,7 +8,11 @@ public enum HttpExceptionEnum implements ExceptionCode {
 
     HTTP_INVALID_PARAMETER("4", "Invalid parameter."),
 
-    HTTP_ENTER_CORRECT_CURRENCY("5", "Enter correnct currency.");
+    HTTP_ENTER_CORRECT_CURRENCY("5", "Enter correnct currency."),
+
+    HTTP_CONVERSION_DATA_DOES_NOT_SAVED("6", "Convertion data does not saved. Please try again"),
+
+    HTTP_CONVERTION_LIST_HAS_ERROR("7", "Convertion List has an error. Please try again");
 
     private String code;
 

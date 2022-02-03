@@ -1,11 +1,13 @@
-package com.selimsahin.foreignexchangeapplication.exception;
+package com.selimsahin.foreignexchangeapplication.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.selimsahin.foreignexchangeapplication.exception.ExceptionCode;
+import com.selimsahin.foreignexchangeapplication.exception.HttpExceptionEnum;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 
-public class BaseResponse implements Serializable {
+public class BaseResponse<T> implements Serializable {
 
     protected String resultCode;
 
@@ -13,9 +15,17 @@ public class BaseResponse implements Serializable {
 
     protected String message;
 
+    protected T content;
+
     public BaseResponse() {
         this.resultCode = HttpExceptionEnum.HTTP_OPERATION_SUCCESS.getCode();
         this.resultDesc = HttpExceptionEnum.HTTP_OPERATION_FAILED.getDesc();
+    }
+
+    public BaseResponse(T content) {
+        this.resultCode = HttpExceptionEnum.HTTP_OPERATION_SUCCESS.getCode();
+        this.resultDesc = HttpExceptionEnum.HTTP_OPERATION_FAILED.getDesc();
+        this.content = content;
     }
 
     public BaseResponse(ExceptionCode code) {

@@ -1,34 +1,35 @@
 package com.selimsahin.foreignexchangeapplication.controller;
 
 import com.selimsahin.foreignexchangeapplication.entity.Conversion;
+import com.selimsahin.foreignexchangeapplication.request.ConversionHistoryCriteriaRequest;
 import com.selimsahin.foreignexchangeapplication.service.ConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @RestController
-@RequestMapping("/conversion")
+@RequestMapping
 public class ConversionController {
     @Autowired
     ConversionService conversionService;
 
-    @GetMapping("/get")
+    @GetMapping("/exchange-conversion")
     public Conversion getConversion(
             @RequestParam BigDecimal amount,
-            @RequestParam String targetCurrency) throws Exception {
-        return conversionService.getConversion(amount, targetCurrency);
+            @RequestParam String sourceCurrency,
+            @RequestParam String targetCurrency) {
+        return conversionService.getConversion(amount, sourceCurrency, targetCurrency);
     }
 
-    @GetMapping(value = "/getList")
-    public List<Conversion> fetchResult(@RequestParam(required = false) String transactionDate,
-                                        @RequestParam(required = false) Long conversionId,
-                                        @RequestParam Integer pageNumber,
-                                        @RequestParam Integer pageSize) {
-        return conversionService.getConversionList(transactionDate, conversionId, pageNumber, pageSize);
+    @PostMapping(value = "/conversion-history")
+    public Page<Conversion> getList(@RequestBody ConversionHistoryCriteriaRequest request,
+                                    @PageableDefault(size = 5) Pageable pageable) {
+        return conversionService.getConversionList(request.getTransactionDate(),
+                request.getTransactionId(),
+                pageable);
     }
 }
